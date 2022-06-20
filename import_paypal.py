@@ -1,7 +1,8 @@
 import csv
 import datetime
 import decimal
-import httpx
+
+from utils import post_transaction
 
 
 def get_transactions(paypal_csv):
@@ -19,7 +20,9 @@ def get_transactions(paypal_csv):
             entry_description = row["Descrição"]
             entry_currency = row["Moeda"]
             entry_value = row["Bruto "]
-            entry_value = decimal.Decimal(entry_value.replace(".", "").replace(",", "."))
+            entry_value = decimal.Decimal(
+                entry_value.replace(".", "").replace(",", ".")
+            )
 
             entry_tax = row["Tarifa "]
             entry_tax = decimal.Decimal(entry_tax.replace(".", "").replace(",", "."))
@@ -68,8 +71,12 @@ def get_transactions(paypal_csv):
                     continue
 
                 mensalidades = (75, 85, 110)
-                entry_type = "Mensalidade" if entry_value in mensalidades else "Contribuição"
-                entry_tag = "mensalidade" if entry_type == "Mensalidade" else "contribuicao"
+                entry_type = (
+                    "Mensalidade" if entry_value in mensalidades else "Contribuição"
+                )
+                entry_tag = (
+                    "mensalidade" if entry_type == "Mensalidade" else "contribuicao"
+                )
 
                 transactions.append(
                     (
@@ -93,21 +100,7 @@ def get_transactions(paypal_csv):
     return transactions
 
 
-def post_transaction(transaction):
-    post_url = "http://beta.lhc.rennerocha.com/new_entry"
-    post_data = {
-        "entry_date": transaction[0],
-        "value": transaction[1],
-        "account": transaction[2],
-        "tags": transaction[3],
-        "description": transaction[4]
-    }
-    print(f"Processing {post_data}.")
-    response = httpx.post(post_url, json=post_data)
-    print(response)
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     transactions = get_transactions("Paypal_JunhoParcial.csv")
     for transaction in transactions:
         post_transaction(transaction)
