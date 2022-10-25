@@ -1,6 +1,7 @@
 import csv
 import datetime
 import decimal
+import sys
 
 from utils import post_transaction
 
@@ -101,6 +102,8 @@ def get_transactions(paypal_csv):
 
 
 if __name__ == "__main__":
-    transactions = get_transactions("Paypal_JunhoParcial.csv")
+    # Get CSV report from https://www.paypal.com/reports/statements/monthly
+    transactions = get_transactions(sys.argv[1])
     for transaction in transactions:
+        print(transaction)
         post_transaction(transaction)

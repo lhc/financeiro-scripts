@@ -1,5 +1,6 @@
 import datetime
 import re
+import sys
 
 from utils import post_transaction
 
@@ -9,9 +10,11 @@ IGNORED_ENTRIES = [
     "RESGATE INVEST FACIL",
     "APLIC.INVEST FACIL",
     "TED-TRANSF ELET DISPON REMET.PAYPAL DO BRASIL SER",
+    "TED-TRANSF ELET DISPON REMET.PAYPAL B. S. P. LTDA",
 ]
 
 TAG_MAP = [
+    (r"TRANSFERENCIA PIX REM: ELITON P CRUVINEL", "mensalidade"),
     (r"TRANSFERENCIA PIX REMT: ELITON P CRUVINEL", "mensalidade"),
     (r"CONTADOR", "contador"),
     (r"Max Empresarial", "banco"),
@@ -73,6 +76,7 @@ def get_transactions(bradesco_csv):
 
 
 if __name__ == "__main__":
-    transactions = get_transactions("csv/Bradesco_Junho.CSV")
+    transactions = get_transactions(sys.argv[1])
     for transaction in transactions:
+        print(transaction)
         post_transaction(transaction)
