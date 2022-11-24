@@ -11,6 +11,7 @@ IGNORED_ENTRIES = [
     "APLIC.INVEST FACIL",
     "TED-TRANSF ELET DISPON REMET.PAYPAL DO BRASIL SER",
     "TED-TRANSF ELET DISPON REMET.PAYPAL B. S. P. LTDA",
+    "TRANSFERENCIA PIX REM: PAYPAL DO BRASIL SERV 06/10",
 ]
 
 TAG_MAP = [
@@ -28,7 +29,10 @@ TAG_MAP = [
 ]
 
 
-def get_transactions(bradesco_csv):
+def get_transactions(bradesco_csv, start_date):
+    if start_date is not None:
+        start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+
     transactions = []
     with open(bradesco_csv, "r", encoding="iso-8859-1") as csvfile:
         for row in csvfile.readlines():
@@ -38,9 +42,11 @@ def get_transactions(bradesco_csv):
                 entry_description = entry[1]
                 if entry_description in IGNORED_ENTRIES:
                     continue
-                entry_date = datetime.datetime.strptime(entry[0], "%d/%m/%Y").strftime(
-                    "%Y-%m-%d"
-                )
+
+                entry_date = datetime.datetime.strptime(entry[0], "%d/%m/%Y")
+                if start_date is not None and entry_date < start_date:
+                    continue
+                entry_date = entry_date.strftime("%Y-%m-%d")
 
                 entry_value = entry[3] if entry[3] else entry[4]
                 entry_value = entry_value.replace(".", "").replace(",", ".")
@@ -76,7 +82,8 @@ def get_transactions(bradesco_csv):
 
 
 if __name__ == "__main__":
-    transactions = get_transactions(sys.argv[1])
+    start_date = sys.argv[2] if len(sys.argv) == 3 else None
+    transactions = get_transactions(sys.argv[1], start_date)
     for transaction in transactions:
         print(transaction)
         post_transaction(transaction)
