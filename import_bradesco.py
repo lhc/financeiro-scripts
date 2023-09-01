@@ -6,18 +6,22 @@ from utils import post_transaction
 
 
 IGNORED_ENTRIES = [
+    "APLICACAO AUTOMATICA",
     "SALDO ANTERIOR",
     "RESGATE INVEST FACIL",
     "RESG AUTOMATICO INVESTIM",
     "APLIC.INVEST FACIL",
     "TED-TRANSF ELET DISPON REMET.PAYPAL DO BRASIL SER",
     "TED-TRANSF ELET DISPON REMET.PAYPAL B. S. P. LTDA",
+    "TED-TRANSF ELET DISPON REMET.PAYPAL DO BRASIL INS",
     "TRANSFERENCIA PIX REM: PAYPAL DO BRASIL SERV 06/10",
+    "TRANSFERENCIA PIX DES: Laboratório Hacker De 25/07",
 ]
 
 TAG_MAP = [
     (r"TRANSFERENCIA PIX REM: ELITON P CRUVINEL", "mensalidade"),
     (r"TRANSFERENCIA PIX REMT: ELITON P CRUVINEL", "mensalidade"),
+    (r"TRANSFERENCIA PIX REM: Juan Manoel Marinho", "mensalidade"),
     (r"CONTADOR", "contador"),
     (r"Max Empresarial", "banco"),
     (r"COBRANCA ALUGUEL", "aluguel"),
@@ -26,6 +30,7 @@ TAG_MAP = [
     (r"CONTA DE TELEFONE VIVO", "vivo"),
     (r"TRANSF PGTO PIX TARIFA BANCARIA", "banco"),
     (r"TARIFA BANCARIA TRANSF PGTO PIX", "banco"),
+    (r"TARIFA BANCARIA LIQUIDACAO QRCODE PIX", "banco"),
     (r"PAGTO ELETRONICO TRIBUTO", "impostos"),
 ]
 

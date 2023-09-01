@@ -25,18 +25,19 @@ def get_transactions(paypal_csv, start_date):
                 continue
 
             entry_date = entry_date.strftime("%Y-%m-%d")
-            entry_description = row["Descrição"]
+            entry_description = row["Título do produto"]
             entry_currency = row["Moeda"]
-            entry_value = row["Bruto "]
+            entry_value = row["Bruto"]
             entry_value = decimal.Decimal(
                 entry_value.replace(".", "").replace(",", ".")
             )
 
-            entry_tax = row["Tarifa "]
+            entry_tax = row["Tarifa"]
             entry_tax = decimal.Decimal(entry_tax.replace(".", "").replace(",", "."))
 
+            entry_type = row["Tipo"]
             entry_name = row["Nome"]
-            if entry_description == "Retirada geral - Conta bancária":
+            if entry_type == "Retirada geral":
                 transactions.append(
                     (
                         entry_date,
@@ -55,7 +56,7 @@ def get_transactions(paypal_csv, start_date):
                         "Transferência Paypal -> Conta Corrente",
                     )
                 )
-            elif entry_description == "Pagamento de doação":
+            elif entry_type == "Pagamento de doação":
                 transactions.append(
                     (
                         entry_date,
@@ -74,7 +75,7 @@ def get_transactions(paypal_csv, start_date):
                         rf"Taxa Doação R${entry_value} - {entry_name}",
                     )
                 )
-            elif entry_description == "Pagamento de assinaturas":
+            elif entry_type == "Pagamento de assinaturas":
                 if entry_currency == "USD":
                     print(f"USD payment - Unable to process automatically:\n{row}")
                     continue
@@ -105,6 +106,19 @@ def get_transactions(paypal_csv, start_date):
                         rf"Taxa {entry_type} R${entry_value} - {entry_name}",
                     )
                 )
+
+            elif entry_type == "Conversão de moeda em geral":
+                if entry_currency == "BRL":
+                    # Marcio is the only payment in USD
+                    transactions.append(
+                        (
+                            entry_date,
+                            str(entry_value),
+                            "_paypal_lhc",
+                            "mensalidade",
+                            "Mensalidade LHC - USD50 - Marcio Paduan Donadio",
+                        )
+                    )
 
     return transactions
 
